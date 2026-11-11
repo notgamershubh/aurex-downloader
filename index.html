@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#080808"><title>AUREX Downloader</title>
+<style>
+:root{color-scheme:dark;--gold:#e8bd55;--muted:#aaa}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0,#302410 0,#111 42%,#080808 78%);color:#f7f4ec;font:16px/1.5 Inter,system-ui,Arial,sans-serif;display:grid;place-items:center;padding:24px}.wrap{width:min(720px,100%)}header{text-align:center;margin-bottom:32px}.mark{display:inline-grid;place-items:center;width:58px;height:58px;border:1px solid #80652f;border-radius:18px;color:var(--gold);font-weight:900;font-size:25px;box-shadow:0 0 35px #d6a63a22}h1{font-size:clamp(32px,7vw,52px);letter-spacing:.12em;margin:14px 0 4px}h1 span{color:var(--gold)}.sub{color:var(--muted);margin:0}.panel{background:#111c;border:1px solid #ffffff19;border-radius:22px;padding:clamp(20px,5vw,34px);box-shadow:0 24px 80px #0008}label{display:block;font-size:13px;color:#d8c89e;margin-bottom:10px;letter-spacing:.08em;text-transform:uppercase}input{width:100%;padding:17px 16px;background:#080808;border:1px solid #ffffff26;border-radius:12px;color:white;font:inherit;outline:none}input:focus{border-color:var(--gold);box-shadow:0 0 0 3px #e8bd5520}.actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}button,.linkbtn{border:0;border-radius:11px;padding:14px 20px;font-weight:800;cursor:pointer;text-decoration:none;text-align:center}.primary{background:linear-gradient(135deg,#f4d47d,#c18b27);color:#17120a;flex:1}.secondary{background:#242424;color:#eee}.hint{color:#aaa;font-size:13px;margin:14px 0 0}.result{display:none;margin-top:22px;border-top:1px solid #ffffff20;padding-top:20px}.result p{color:#d9d1bf;font-size:14px}video,audio{width:100%;margin-top:12px;border-radius:12px} .notice{margin-top:18px;padding:13px 15px;background:#e8bd5510;border:1px solid #e8bd5533;border-radius:12px;color:#d9c99e;font-size:13px}.footer{text-align:center;color:#777;font-size:12px;margin-top:22px}a{color:var(--gold)}
+</style></head>
+<body><main class="wrap"><header><div class="mark">A</div><h1>AUREX <span>DOWNLOADER</span></h1><p class="sub">A clean, simple media link tool.</p></header>
+<section class="panel"><label for="url">Direct media file URL</label><input id="url" type="url" placeholder="https://example.com/video.mp4" autocomplete="url">
+<div class="actions"><button class="primary" id="check">CHECK LINK</button><button class="secondary" id="clear">CLEAR</button></div>
+<p class="hint">Supported: MP4, WebM, MOV, MP3, M4A, WAV, OGG and AAC.</p>
+<div class="result" id="result"><strong id="status">Link ready</strong><div id="preview"></div><div class="actions"><a class="linkbtn primary" id="download" href="#" download>DOWNLOAD FILE</a><a class="linkbtn secondary" id="open" href="#" target="_blank" rel="noopener">OPEN SOURCE</a></div><p id="detail"></p></div>
+<div class="notice">Use direct links only for media you own, public-domain material, or files you have permission to download. This tool does not download YouTube pages, bypass DRM, or evade platform restrictions. Some hosts may block previews or downloads.</div></section><p class="footer">AUREX • FREE BETA • Runs in your browser</p></main>
+<script>
+const $=id=>document.getElementById(id), videoExt=['mp4','webm','mov','m4v'], audioExt=['mp3','m4a','ogg','wav','aac'];
+function reset(){ $('result').style.display='none';$('preview').replaceChildren();$('url').value=''; }
+$('clear').onclick=reset;
+$('check').onclick=()=>{const raw=$('url').value.trim();let u;try{u=new URL(raw)}catch{$('status').textContent='Enter a valid URL.';$('result').style.display='block';$('preview').replaceChildren();return}
+if(!['http:','https:'].includes(u.protocol)||/(^|\.)youtube\.com$|(^|\.)youtu\.be$/i.test(u.hostname)){ $('status').textContent='Please use a permitted direct media-file URL.';$('result').style.display='block';$('preview').replaceChildren();return}
+const ext=u.pathname.split('.').pop().toLowerCase(),isVideo=videoExt.includes(ext),isAudio=audioExt.includes(ext);$('result').style.display='block';$('preview').replaceChildren();
+if(!isVideo&&!isAudio){$('status').textContent='File type not recognised.';$('detail').textContent='Use a direct link ending in a supported media extension.';return}
+$('status').textContent='Link format recognised';const el=document.createElement(isVideo?'video':'audio');el.controls=true;el.preload='metadata';el.src=u.href;$('preview').append(el);$('download').href=u.href;$('download').download='';$('open').href=u.href;$('detail').textContent='Your browser or the hosting server may control whether this file can be downloaded.';
+};
+</script></body></html>
