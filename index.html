@@ -10,7 +10,7 @@
 <body><main class="wrap">
 <header><div class="mark">A</div><h1>AUREX <span>DOWNLOADER</span></h1><p class="sub">Your media links. One clean workspace.</p></header>
 <section class="panel">
-<div class="tabs"><button class="tab active" data-tab="youtube">YouTube link</button><button class="tab" data-tab="direct">Direct media</button></div>
+<div class="tabs"><button class="tab active" data-tab="youtube">YouTube link</button><button class="tab" data-tab="direct">Direct media</button><button class="tab" data-tab="promote">Promote video</button></div>
 <div class="section active" id="youtube">
 <label for="yturl">Paste a YouTube video link</label><input id="yturl" type="url" placeholder="https://www.youtube.com/watch?v=..." autocomplete="url">
 <div class="actions"><button class="primary" id="ytcheck">LOAD VIDEO</button><button class="secondary" id="ytclear">CLEAR</button></div>
@@ -23,12 +23,33 @@
 <p class="hint">Supported: MP4, WebM, MOV, MP3, M4A, WAV, OGG and AAC.</p>
 <div class="result" id="result"><strong id="status">Link ready</strong><div id="preview"></div><div class="actions"><a class="linkbtn primary" id="download" href="#" download>DOWNLOAD FILE</a><a class="linkbtn secondary" id="open" href="#" target="_blank" rel="noopener">OPEN SOURCE</a></div><p id="detail"></p></div>
 </div>
+
+<div class="section" id="promote">
+<span class="pill">AUREX CREATOR TOOLS</span>
+<h2 style="margin:4px 0 8px;color:var(--gold)">Promote your video</h2>
+<p class="hint" style="margin:0 0 18px">Create a clean share kit so real viewers can discover your content. No bots, forced views, or auto-play loops.</p>
+<label for="promoUrl">YouTube video link</label><input id="promoUrl" type="url" placeholder="https://youtu.be/your-video">
+<label for="promoTitle" style="margin-top:16px">Video title</label><input id="promoTitle" maxlength="100" placeholder="Enter your video title">
+<label for="promoDesc" style="margin-top:16px">What is this video about?</label><input id="promoDesc" maxlength="180" placeholder="Minecraft PvP, challenge, tutorial...">
+<div class="actions"><button class="primary" id="makePromo">CREATE SHARE KIT</button><button class="secondary" id="clearPromo">CLEAR</button></div>
+<div class="result" id="promoResult">
+<strong>Your share-ready post</strong>
+<textarea id="promoText" readonly rows="6" style="width:100%;margin-top:12px;padding:14px;background:#080808;border:1px solid #ffffff26;border-radius:12px;color:#eee;font:14px/1.5 inherit;resize:vertical"></textarea>
+<div class="actions"><button class="primary" id="copyPromo">COPY POST</button><a class="linkbtn secondary" id="openPromo" href="#" target="_blank" rel="noopener">OPEN VIDEO</a></div>
+<p class="hint">Share it only in communities where self-promotion is allowed. Ask people to watch if they're genuinely interested—don't offer rewards for views or ask for repeated/looped playback.</p>
+</div>
+<div class="notice">This tool prepares promotional text only. It cannot guarantee views, increase view counts directly, or make people watch. Real reach comes from relevant communities and viewers choosing your video.</div>
+</div>
 <div class="notice">Use downloads only when you own the content, have permission, or the creator/platform explicitly allows it. AUREX does not extract YouTube streams, bypass DRM, or evade download restrictions. YouTube previews use its official embedded player.</div>
 </section><p class="footer">AUREX • FREE BETA • Runs in your browser</p></main>
 <script>
 const $=id=>document.getElementById(id);
 document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===b));document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id===b.dataset.tab));}));
 function videoId(raw){let u;try{u=new URL(raw)}catch{return null}if(!['http:','https:'].includes(u.protocol))return null;const h=u.hostname.toLowerCase().replace(/^www\./,'');if(h==='youtu.be')return u.pathname.split('/').filter(Boolean)[0]||null;if(!['youtube.com','m.youtube.com','music.youtube.com','youtube-nocookie.com'].includes(h))return null;if(u.pathname==='/watch')return u.searchParams.get('v');const m=u.pathname.match(/^\/(?:shorts|embed|live)\/([^/?]+)/);return m?m[1]:null}
+
+$('makePromo').onclick=()=>{const id=videoId($('promoUrl').value.trim()),title=$('promoTitle').value.trim(),desc=$('promoDesc').value.trim();$('promoResult').style.display='block';if(!id){$('promoText').value='Please enter a valid YouTube video link first.';$('openPromo').href='#';return}const link='https://www.youtube.com/watch?v='+id;$('openPromo').href=link;$('promoText').value=(title||'Check out my new video!')+'\\n\\n'+(desc?desc+'\\n\\n':'')+link+'\\n\\nIf this topic interests you, check it out and share your thoughts!\\n\\n#YouTube #Gaming #Minecraft';};
+$('copyPromo').onclick=async()=>{try{await navigator.clipboard.writeText($('promoText').value);$('copyPromo').textContent='COPIED!';setTimeout(()=>$('copyPromo').textContent='COPY POST',1600)}catch{$('promoText').select();document.execCommand('copy');$('copyPromo').textContent='COPIED!'}};
+$('clearPromo').onclick=()=>{$('promoUrl').value='';$('promoTitle').value='';$('promoDesc').value='';$('promoText').value='';$('promoResult').style.display='none';};
 $('ytcheck').onclick=()=>{const id=videoId($('yturl').value.trim());$('ytresult').style.display='block';$('ytframe').replaceChildren();if(!id||! /^[\w-]{11}$/.test(id)){$('ytstatus').textContent='That does not look like a valid YouTube video link.';$('ytopen').href='#';$('ytnote').textContent='Paste a normal YouTube watch, Shorts, live, or youtu.be link.';return}$('ytstatus').textContent='Video loaded in the official YouTube player';const f=document.createElement('iframe');f.src='https://www.youtube-nocookie.com/embed/'+encodeURIComponent(id);f.title='YouTube video preview';f.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';f.allowFullscreen=true;$('ytframe').append(f);$('ytopen').href='https://www.youtube.com/watch?v='+id;$('ytnote').textContent='To download a video from your own channel: open YouTube Studio → Content → ⋮ next to the video → Download. Other videos can be downloaded only where the creator/platform permits it.'};
 $('ytclear').onclick=()=>{$('yturl').value='';$('ytresult').style.display='none';$('ytframe').replaceChildren()};
 const videoExt=['mp4','webm','mov','m4v'],audioExt=['mp3','m4a','ogg','wav','aac'];
